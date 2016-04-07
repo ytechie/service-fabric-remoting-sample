@@ -6,6 +6,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.ServiceFabric.Services.Communication.Runtime;
 using Microsoft.ServiceFabric.Services.Runtime;
+using ServerService;
+using Microsoft.ServiceFabric.Services.Remoting.Client;
 
 namespace ClientService
 {
@@ -33,8 +35,10 @@ namespace ClientService
         /// <param name="cancellationToken">Canceled when Service Fabric needs to shut down this service instance.</param>
         protected override async Task RunAsync(CancellationToken cancellationToken)
         {
-            // TODO: Replace the following sample code with your own logic 
-            //       or remove this RunAsync override if it's not needed in your service.
+            var server = ServiceProxy.Create<IEchoService>(new Uri("fabric:/ServerApp/ServerService"));
+            var response = await server.Echo("hello");
+
+            ServiceEventSource.Current.ServiceMessage(this, "Got server response: {0}", response);
 
             long iterations = 0;
 
